@@ -6,13 +6,14 @@
  *)
 program Pong;
 
-uses glut_function;
+uses glut_function,crt;
 
 var
 	player1,player2 : String;
 	speed: double;
 	new: String;
 begin
+	clrscr;
 	writeln('You want to enter new data?(y/n)');
 		readln(new);
 	if (new = 'y') then

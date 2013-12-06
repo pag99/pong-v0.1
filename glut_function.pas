@@ -12,6 +12,8 @@ INTERFACE
 	const
 		FSMode = '1366x768:32@75';
 		path = '/home/pablo/Projects/pong/settings.pong';
+		bend = 0.3; {* in radians *}
+
 	type
 		kepress = array [byte] of boolean; {* array all keys *}
 		
@@ -49,7 +51,7 @@ INTERFACE
 
 	procedure glWrite(X, Y: GLfloat; Font: Pointer; Text: String);
 
-	procedure loadSettingsFromFile(default:boolean);
+	procedure loadSettingsFromFile(loadFromFile:boolean);
 
 	procedure saveSettingsToFile();
 
@@ -118,9 +120,9 @@ IMPLEMENTATION
  * Load settings form file or clear score to default
  *}
 
-	procedure loadSettingsFromFile(default:boolean);
+	procedure loadSettingsFromFile(loadFromFile:boolean);
 		begin
-			if (default = false) then
+			if (loadFromFile = false) then
 				begin
 					settings.player1_point	:= 0;
 					settings.player2_point	:= 0;
@@ -172,13 +174,13 @@ IMPLEMENTATION
 							angle := Pi - angle
 					else 
 						if (ball.y >= position1 + 2.5) AND (ball.y <= position1 + 5) then
-							angle := Pi - angle + 0.3
+							angle := Pi - angle + bend
 						else 
 							if (ball.y >= position1 - 5) AND (ball.y <= position1 -2.5) then
-								angle := Pi - angle - 0.3
+								angle := Pi - angle - bend
 							else
 								begin
-									settings.player1_point := settings.player1_point + 1;
+									settings.player2_point := settings.player2_point + 1;
 									Reset_Game();
 								end;
 				end;
@@ -189,13 +191,13 @@ IMPLEMENTATION
 							angle := Pi - angle
 					else 
 						if (ball.y >= position2 + 2.5) AND (ball.y <= position2 + 5) then
-							angle := Pi - angle + 0.3
+							angle := Pi - angle + bend
 						else 
 							if (ball.y >= position2 - 5) AND (ball.y <= position2 -2.5) then
-								angle := Pi - angle - 0.3
+								angle := Pi - angle - bend
 							else
 								begin
-									settings.player2_point := settings.player2_point + 1;
+									settings.player1_point := settings.player1_point + 1;
 									Reset_Game();
 								end;
 				end;
@@ -224,10 +226,10 @@ IMPLEMENTATION
  *}
 	procedure ControlGame();
 		begin
-			if (keyboardpress[97] = TRUE) AND (position1 < 20) then
+			if (keyboardpress[97] = TRUE) AND (position1 < 20) then {* 'a' move to up *}
 		  		position1 := position1 + 0.5;
 
-		  	if (keyboardpress[122] = TRUE) AND (position1 > -20) then
+		  	if (keyboardpress[122] = TRUE) AND (position1 > -20) then {* 'z' move to down *}
 		  		position1 := position1 - 0.5;
 
 		  	if (specialkeyboardpress[GLUT_KEY_UP] = TRUE) AND (position2 < 20) then
@@ -236,17 +238,17 @@ IMPLEMENTATION
 		  	if (specialkeyboardpress[GLUT_KEY_DOWN] = TRUE) AND (position2 > -20) then
 		  		position2 := position2 - 0.5;
 
-		  	if (keyboardpress[32] = true) then
+		  	if (keyboardpress[32] = true) then {* space *}
 		  		begin
 		  			start := true;
 		  		end;
 
-		  	if (keyboardpress[107] = true) then
+		  	if (keyboardpress[107] = true) then {* 'k' *}
 		  		begin
 		  			saveSettingsToFile();
 		  		end;
 
-		  	if (keyboardpress[108] = true) then
+		  	if (keyboardpress[108] = true) then {* 'l' *}
 		  		begin
 		  			loadSettingsFromFile(true);
 		  		end;
@@ -352,7 +354,7 @@ IMPLEMENTATION
 		end;
 
 {**
- * ( function get form tutorial about glut)
+ * Load positon camera and matrix
  *}
 	procedure ReSizeGLScene(Width, Height: Longint); cdecl;
 		begin
